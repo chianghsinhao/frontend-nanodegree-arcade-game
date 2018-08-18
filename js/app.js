@@ -175,8 +175,8 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-// This handle click event for reset button;
-// reset player position and button is set back to disabled
+// This handles click event for reset button;
+// resets player position and button is set back to disabled
 resetBtn.addEventListener('click', function(e) {
     playerWin = false;
     player.x = PLAYER_START_X;
