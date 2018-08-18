@@ -1,15 +1,15 @@
 
-// Number of columns (not including water)
+// Number of columns
 const NUM_COLS = 5;
 // Number of rows
-const NUM_ROWS = 5;
+const NUM_ROWS = 6;
 // Column pixel width
 const COL_SIZE = 101;
 // Row pixel height
 const ROW_SIZE = 83;
 
 // start offset for row0
-const ROW_START = 65;
+const ROW_START = -20;
 
 // Left and right offset offset of canvas where the enemy can start
 // The enemy starting position can range from [-CANV_OFS : ROW_SIZE * NUM_ROWS + CANV_OFS]
@@ -19,6 +19,15 @@ const CANV_OFS = 101;
 const ENEMY_WIDTH = 101;
 // Player width, used for collision detection
 const PLAYER_WIDTH = 60;
+
+// Player start X position
+const PLAYER_START_X = 2 * COL_SIZE;
+const PLAYER_START_Y = ROW_START + 5 * ROW_SIZE;
+
+// Whether player wins
+var playerWin = false;
+
+let resetBtn = document.getElementById('reset');
 
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
@@ -40,6 +49,9 @@ var Enemy = function(x, y, speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
+    if (playerWin) {
+      return;
+    }
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -67,16 +79,28 @@ var Player = function(x, y) {
 };
 
 Player.prototype.update = function(dt) {
+    if (playerWin) {
+      return;
+    }
+
     for (let enemy of allEnemies) {
         if (enemy.y !== this.y) {
           continue;
         }
 
-        // reset position to (2,4)
+        // reset to start position
         if (Math.abs(this.x - enemy.x) < ((ENEMY_WIDTH+PLAYER_WIDTH)/2)) {
-          this.x = 2 * COL_SIZE;
-          this.y = ROW_START + 4 * ROW_SIZE;
+          this.x = PLAYER_START_X;
+          this.y = PLAYER_START_Y;
         }
+    }
+
+    if (this.y === ROW_START) {
+        setTimeout(function(){
+            alert("You Win!");
+            resetBtn.disabled = false;
+        }, 300);
+        playerWin = true;
     }
 };
 
@@ -85,6 +109,9 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(direction) {
+    if (playerWin) {
+      return;
+    }
     switch (direction) {
         case 'left':
             this.x -= COL_SIZE;
@@ -120,9 +147,9 @@ Player.prototype.handleInput = function(direction) {
 
 // row/speed pair to be used to initiate enemy objects
 const rowSpeedPairs = [
-    [0, 0], [0, 0], [0, 1],
-//    [1, 0], [1, 1], [1, 2], [1, 2],
-    [2, 0], [2, 0], [2, 1]];
+    [1, 0], [1, 0], [1, 1],
+    [2, 0], [2, 1], [2, 2], [2, 2],
+    [3, 0], [3, 0], [3, 1]];
 var allEnemies = rowSpeedPairs.map(function (param) {
     let [row, speed] = param;
     let visible_width = NUM_COLS * COL_SIZE + 2 * CANV_OFS;
@@ -132,7 +159,7 @@ var allEnemies = rowSpeedPairs.map(function (param) {
     return new Enemy(x, y, speed);
 });
 
-var player = new Player(2 * COL_SIZE, ROW_START + 4 * ROW_SIZE);
+var player = new Player(PLAYER_START_X, PLAYER_START_Y);
 
 
 // This listens for key presses and sends the keys to your
@@ -147,3 +174,10 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+resetBtn.addEventListener('click', function(e) {
+    playerWin = false;
+    player.x = PLAYER_START_X;
+    player.y = PLAYER_START_Y;
+    this.disabled = true;
+})
