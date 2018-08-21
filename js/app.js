@@ -55,10 +55,10 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.x += Math.floor((3 + 10 * this.speed) * 50 * dt);
+    this.x += Math.floor((3 + 5 * this.speed) * 40 * dt);
 
     // take a random bound to randomize the enemy turnaround behavior
-    let bound = Math.floor(Math.random() * 700);
+    let bound = Math.floor(Math.random() * 2000);
     if (this.x >= (bound + NUM_COLS * COL_SIZE)) {
       this.x = (-bound);
     }
@@ -147,9 +147,9 @@ Player.prototype.handleInput = function(direction) {
 
 // row/speed pair to be used to initiate enemy objects
 const rowSpeedPairs = [
-    [1, 0], [1, 0], [1, 1],
-    [2, 0], [2, 1], [2, 2], [2, 2],
-    [3, 0], [3, 0], [3, 1]];
+    [1, 0], [1, 1],
+    [2, 0], [2, 1],
+    [3, 0], [3, 1]];
 var allEnemies = rowSpeedPairs.map(function (param) {
     let [row, speed] = param;
     let visible_width = NUM_COLS * COL_SIZE + 2 * CANV_OFS;
